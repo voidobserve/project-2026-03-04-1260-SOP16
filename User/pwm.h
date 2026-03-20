@@ -27,8 +27,8 @@ enum
 // 定时，限制占空比的时间（用于上电多久之后，限制最大的占空比），单位：ms
 // #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)1 * 60 * 60 * 1000)
 // #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)7 * 60 * 1000) // 7min 给客户测试用
-#define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)30 * 60 * 1000) // 30min 给客户测试用
-// #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)45 * 60 * 1000) // 45min 给客户测试用
+// #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)30 * 60 * 1000) // 30min 给客户测试用
+#define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)45 * 60 * 1000) // 45min 给客户测试用
 // #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)55 * 60 * 1000) // 55min 给客户测试用
 // #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)30 * 1000) // USER_TO_DO 测试时使用
 // 时间到来之后，要限制的最大占空比值
