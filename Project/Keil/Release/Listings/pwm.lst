@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:03:10 PAGE 1   
+C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:06:18 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PWM
@@ -62,7 +62,7 @@ line level    source
   43   1          FOUT_S14 = GPIO_FOUT_AF_FUNC;      // AF功能输出
   44   1          FOUT_S16 = GPIO_FOUT_STMR0_PWMOUT; // stmr0_pwmout
   45   1      
-C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:03:10 PAGE 2   
+C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:06:18 PAGE 2   
 
   46   1          // P15 15脚 作为第2路PWM输出
   47   1          STMR_CNTCLR |= STMR_1_CNT_CLR(0x1); // 清空计数值
@@ -126,7 +126,7 @@ line level    source
  102          
  103          /**
  104           * @brief 获取第一路PWM的运行状态
-C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:03:10 PAGE 3   
+C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:06:18 PAGE 3   
 
  105           *
  106           * @return u8 0--pwm关闭，1--pwm开启
@@ -190,7 +190,7 @@ line level    source
  164          void pwm_channel_1_disable(void)
  165          {
  166   1          // 直接输出0%的占空比，可能会有些跳动，需要将对应的引脚配置回输出模式
-C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:03:10 PAGE 4   
+C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:06:18 PAGE 4   
 
  167   1          STMR_PWMEN &= ~(0x01 << 1); // 不使能PWM1的输出
  168   1      
@@ -254,7 +254,7 @@ line level    source
              -��
  222   1          if (tmp_pwm_duty >= limited_pwm_duty_due_to_fan_err)
  223   1          {
-C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:03:10 PAGE 5   
+C51 COMPILER V9.60.7.0   PWM                                                               03/20/2026 09:06:18 PAGE 5   
 
  224   2              tmp_pwm_duty = limited_pwm_duty_due_to_fan_err;
  225   2          }

@@ -28,8 +28,8 @@ enum
 // #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)1 * 60 * 60 * 1000)
 // #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)7 * 60 * 1000) // 7min 给客户测试用
 // #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)30 * 60 * 1000) // 30min 给客户测试用
-#define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)45 * 60 * 1000) // 45min 给客户测试用
-// #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)55 * 60 * 1000) // 55min 给客户测试用
+// #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)45 * 60 * 1000) // 45min 给客户测试用
+#define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)55 * 60 * 1000) // 55min 给客户测试用
 // #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)30 * 1000) // USER_TO_DO 测试时使用
 // 时间到来之后，要限制的最大占空比值
 #define SCHEDULE_TIME_TO_LIMIT_PWM_VAL ((u16)PWM_DUTY_80_PERCENT)
