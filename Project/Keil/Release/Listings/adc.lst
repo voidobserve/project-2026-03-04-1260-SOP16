@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:48:47 PAGE 1   
+C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:50:07 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ADC
@@ -62,7 +62,7 @@ line level    source
   50   1                      (0x01 << 0);  // ADC0 通道中断使能
   51   1          delay_ms(1);              // 等待adc稳定
   52   1      }
-C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:48:47 PAGE 2   
+C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:50:07 PAGE 2   
 
   53          
   54          void adc_channel_sel(u8 adc_sel_pin)
@@ -126,7 +126,7 @@ line level    source
              -��压，不选择外部参考，清除选择的参考电压
  106   3              ADC_ACON1 |= ADC_VREF_SEL(0x6) |                                            // 选择内部参考�
              -��压VCCA
-C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:48:47 PAGE 3   
+C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:50:07 PAGE 3   
 
  107   3                           ADC_TEN_SEL(0x3);                                              // 关闭测试信号
  108   3              ADC_ACON0 = ADC_CMP_EN(0x1) |                                               // 打开ADC中的CMP�
@@ -190,7 +190,7 @@ line level    source
  164   2              ret = adc_val_from_temp;
  165   2              break;
  166   2          case ADC_SEL_PIN_FAN:
-C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:48:47 PAGE 4   
+C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:50:07 PAGE 4   
 
  167   2              ret = adc_val_from_fan;
  168   2              break;
@@ -254,7 +254,7 @@ line level    source
  225   1      
  226   1          // 如果已经超过75摄氏度 ，不用再检测8脚的电压，等待用户排查原因，再重�
              -�（重新上电）
-C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:48:47 PAGE 5   
+C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:50:07 PAGE 5   
 
  227   1          if (TEMP_75 == temp_status)
  228   1          {
@@ -318,7 +318,7 @@ line level    source
  283   2          }
  284   1      }
  285          
-C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:48:47 PAGE 6   
+C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:50:07 PAGE 6   
 
  286          // 根据温度（电压值扫描）或9脚的状态来设定占空比
  287          void set_duty(void)
@@ -382,7 +382,7 @@ line level    source
  342   2              limited_pwm_duty_due_to_fan_err = PWM_DUTY_25_PERCENT;
  343   2          }
  344   1      }
-C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:48:47 PAGE 7   
+C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:50:07 PAGE 7   
 
  345          
  346          void ADC_IRQHandler(void) interrupt ADC_IRQn
@@ -446,7 +446,7 @@ line level    source
  404   2              else if (ADC_STATUS_SEL_GET_TEMP == cur_adc_status)
  405   2              {
  406   3                  // 更新热敏电阻检测一端的ad值
-C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:48:47 PAGE 8   
+C51 COMPILER V9.60.7.0   ADC                                                               03/24/2026 16:50:07 PAGE 8   
 
  407   3                  // adc_val_from_temp = adc_val;
  408   3                  adc_update_val(ADC_SEL_PIN_TEMP, adc_val);

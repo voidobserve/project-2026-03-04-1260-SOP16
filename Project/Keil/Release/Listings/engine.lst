@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:48:48 PAGE 1   
+C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:50:08 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ENGINE
@@ -62,7 +62,7 @@ line level    source
   47   2              adc_clear_flag(ADC_SEL_PIN_ENGINE);
   48   2      
   49   2              if (is_init == 0)
-C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:48:48 PAGE 2   
+C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:50:08 PAGE 2   
 
   50   2              {
   51   3                  is_init = 1; // 表示至少获取了一次ad值数据
@@ -126,7 +126,7 @@ line level    source
  108   2              t_adc_max = 0;
  109   2              t_adc_min = 4096;
  110   2              for (; i < ARRAY_SIZE(filter_buff_2); i++)
-C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:48:48 PAGE 3   
+C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:50:08 PAGE 3   
 
  111   2              {
  112   3                  if (filter_buff_2[i] > t_adc_max)
@@ -190,7 +190,7 @@ line level    source
  165   3              }
  166   2              else if (over_drive_status == 0)
  167   2              {
-C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:48:48 PAGE 4   
+C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:50:08 PAGE 4   
 
  168   3                  // 未满载 pwm++
  169   3                  if (flag_is_pwm_add_time_comes) // pwm占空比递增时间到来
@@ -254,7 +254,7 @@ line level    source
  227   4                  }
  228   3              }
  229   2          }
-C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:48:48 PAGE 5   
+C51 COMPILER V9.60.7.0   ENGINE                                                            03/24/2026 16:50:08 PAGE 5   
 
  230   1      }
 
