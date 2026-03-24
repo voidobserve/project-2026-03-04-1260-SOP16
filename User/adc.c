@@ -4,10 +4,15 @@
 // 存放温度状态的变量
 volatile u8 temp_status = TEMP_NORMAL;
 
-volatile u16 adc_val_from_engine; // 存放 从发动机一侧 采集到的ad值
-volatile u16 adc_val_from_knob;   // 存放 从旋钮一侧 采集到的ad值
-volatile u16 adc_val_from_temp;   // 存放 从热敏电阻一侧 采集到的ad值
-volatile u16 adc_val_from_fan;    // 存放 检测风扇一侧 采集到的ad值
+static volatile u16 adc_val_from_engine; // 存放 从发动机一侧 采集到的ad值
+static volatile u16 adc_val_from_knob;   // 存放 从旋钮一侧 采集到的ad值
+static volatile u16 adc_val_from_temp;   // 存放 从热敏电阻一侧 采集到的ad值
+static volatile u16 adc_val_from_fan;    // 存放 检测风扇一侧 采集到的ad值
+
+static volatile u8 flag_is_adc_val_engine_updated = 0;
+static volatile u8 flag_is_adc_val_knob_updated = 0;
+static volatile u8 flag_is_adc_val_temp_updated = 0;
+static volatile u8 flag_is_adc_val_fan_updated = 0;
 
 volatile bit flag_tim_scan_fan_is_err = 0;      // 标志位，由定时器扫描并累计时间，表示当前风扇是否异常
 volatile u8 cur_fan_status = FAN_STATUS_NORMAL; // 当前风扇状态
@@ -117,16 +122,106 @@ void adc_channel_sel(u8 adc_sel_pin)
                 ADC_EN(0x1);        // 使能adc
 }
 
-// 从引脚上采集滤波后的电压值,函数内部会将采集到的ad转换成对应的电压值
-u32 get_voltage_from_pin(void)
+// 更新采集的ad值
+void adc_update_val(adc_sel_pin_t adc_sel_pin, u16 adc_val)
 {
-    return (u32)adc_val_from_temp * 12 / 10;
+    switch (adc_sel_pin)
+    {
+    case ADC_SEL_PIN_ENGINE:
+        adc_val_from_engine = adc_val;
+        flag_is_adc_val_engine_updated = 1;
+        break;
+    case ADC_SEL_PIN_KNOB:
+        adc_val_from_knob = adc_val;
+        flag_is_adc_val_knob_updated = 1;
+        break;
+    case ADC_SEL_PIN_TEMP:
+        adc_val_from_temp = adc_val;
+        flag_is_adc_val_temp_updated = 1;
+        break;
+    case ADC_SEL_PIN_FAN:
+        adc_val_from_fan = adc_val;
+        flag_is_adc_val_fan_updated = 1;
+        break;
+
+    default:
+        break;
+    }
+}
+
+u16 adc_get_val(adc_sel_pin_t adc_sel_pin)
+{
+    u16 ret = 0;
+    switch (adc_sel_pin)
+    {
+    case ADC_SEL_PIN_ENGINE:
+        ret = adc_val_from_engine;
+        break;
+    case ADC_SEL_PIN_KNOB:
+        ret = adc_val_from_knob;
+        break;
+    case ADC_SEL_PIN_TEMP:
+        ret = adc_val_from_temp;
+        break;
+    case ADC_SEL_PIN_FAN:
+        ret = adc_val_from_fan;
+        break;
+    default:
+        break;
+    }
+
+    return ret;
+}
+
+// 获取adc对应通道的更新标志
+u8 adc_get_flag(adc_sel_pin_t adc_sel_pin)
+{
+    u8 ret = 0;
+    switch (adc_sel_pin)
+    {
+    case ADC_SEL_PIN_ENGINE:
+        ret = flag_is_adc_val_engine_updated;
+        break;
+    case ADC_SEL_PIN_KNOB:
+        ret = flag_is_adc_val_knob_updated;
+        break;
+    case ADC_SEL_PIN_TEMP:
+        ret = flag_is_adc_val_temp_updated;
+        break;
+    case ADC_SEL_PIN_FAN:
+        ret = flag_is_adc_val_fan_updated;
+        break;
+    default:
+        break;
+    }
+
+    return ret;
+}
+
+void adc_clear_flag(adc_sel_pin_t adc_sel_pin)
+{
+    switch (adc_sel_pin)
+    {
+    case ADC_SEL_PIN_ENGINE:
+        flag_is_adc_val_engine_updated = 0;
+        break;
+    case ADC_SEL_PIN_KNOB:
+        flag_is_adc_val_knob_updated = 0;
+        break;
+    case ADC_SEL_PIN_TEMP:
+        flag_is_adc_val_temp_updated = 0;
+        break;
+    case ADC_SEL_PIN_FAN:
+        flag_is_adc_val_fan_updated = 0;
+        break;
+    }
 }
 
 // 温度检测功能
 void temperature_scan(void)
 {
-    volatile u32 voltage = 0; // 存放adc采集到的电压，单位：mV
+    // volatile u32 voltage = 0; // 存放adc采集到的电压，单位：mV
+    static volatile u32 voltage = 5000; // 存放adc采集到的电压，单位：mV（默认电压对应温度正常时的电压）
 
     // 如果已经超过75摄氏度 ，不用再检测8脚的电压，等待用户排查原因，再重启（重新上电）
     if (TEMP_75 == temp_status)
@@ -146,7 +241,14 @@ void temperature_scan(void)
         cnt = 0;
     }
 
-    voltage = get_voltage_from_pin(); // 得到热敏电阻上的电压
+    // voltage = get_voltage_from_pin(); // 得到热敏电阻上的电压
+    // voltage = (u32)adc_val_from_temp * 12 / 10; // 得到热敏电阻上的电压
+
+    if (adc_get_flag(ADC_SEL_PIN_TEMP))
+    {
+        voltage = (u32)adc_get_val(ADC_SEL_PIN_TEMP) * 12 / 10;
+        adc_clear_flag(ADC_SEL_PIN_TEMP);
+    }
 
 #if USE_MY_DEBUG
     // printf("PIN-8 voltage: %lu mV\n", voltage);
@@ -201,7 +303,13 @@ void set_duty(void)
 
 void fan_scan(void)
 {
-    u16 adc_val = adc_val_from_fan; // adc_val_from_fan 由adc中断触发
+    // u16 adc_val = adc_val_from_fan; // adc_val_from_fan 由adc中断触发
+    static volatile u16 adc_val = 4095; // 默认为ad值最大值，标识风扇正常
+    if (adc_get_flag(ADC_SEL_PIN_FAN))
+    {
+        adc_val = adc_get_val(ADC_SEL_PIN_FAN);
+        adc_clear_flag(ADC_SEL_PIN_FAN);
+    }
 
     /*
         1脚电压低于4.3V时，14，15脚输出25%占空比，
@@ -274,7 +382,8 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
 
             if (i >= 20)
             {
-                adc_val_from_engine = (g_tmpbuff >> 4); // 除以16，取平均值
+                // adc_val_from_engine = (g_tmpbuff >> 4); // 除以16，取平均值
+                adc_update_val(ADC_SEL_PIN_ENGINE, (g_tmpbuff >> 4));
                 cur_adc_status = ADC_STATUS_SEL_ENGINE_DONE;
 
                 // 重新初始化使用到的变量：
@@ -288,19 +397,22 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
         else if (ADC_STATUS_SEL_KNOB == cur_adc_status)
         {
             // 更新旋钮检测一端的ad值
-            adc_val_from_knob = adc_val;
+            // adc_val_from_knob = adc_val;
+            adc_update_val(ADC_SEL_PIN_KNOB, adc_val);
             // printf("2 knob scan done\n");
         }
         else if (ADC_STATUS_SEL_GET_TEMP == cur_adc_status)
         {
             // 更新热敏电阻检测一端的ad值
-            adc_val_from_temp = adc_val;
+            // adc_val_from_temp = adc_val;
+            adc_update_val(ADC_SEL_PIN_TEMP, adc_val);
             // printf("3 temp scan done\n");
         }
         else if (ADC_STATUS_SEL_FAN_DETECT == cur_adc_status)
         {
             // 更新风扇检测一端的ad值
-            adc_val_from_fan = adc_val;
+            // adc_val_from_fan = adc_val;
+            adc_update_val(ADC_SEL_PIN_FAN, adc_val);
             // printf("4 fan scan done\n");
         }
     }

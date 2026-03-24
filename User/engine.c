@@ -37,7 +37,26 @@ void according_pin9_to_adjust_pwm(void)
     static volatile bit flag_is_add_power = 0; // 标志位，是否要连续增功率
 
     volatile u32 adc_pin_9_avg = 0;             // 存放平均值
-    volatile u16 adc_val = adc_val_from_engine; // adc_val_from_engine 由adc中断更新
+    // static volatile u16 adc_val = adc_val_from_engine; // adc_val_from_engine 由adc中断更新
+    static volatile u16 adc_val = 0;
+    static volatile u8 is_init = 0; // 是否初始化
+    
+    if (adc_get_flag(ADC_SEL_PIN_ENGINE))
+    {
+        adc_val = adc_get_val(ADC_SEL_PIN_ENGINE);
+        adc_clear_flag(ADC_SEL_PIN_ENGINE);
+
+        if (is_init == 0)
+        {
+            is_init = 1; // 表示至少获取了一次ad值数据
+        }
+    }
+
+    if (0 == is_init)
+    {
+        // 如果没有获取过数据，直接返回
+        return;
+    }  
 
     if (filter_buff[0] == 0xFFFF) // 如果是第一次检测，让数组内所有元素都变为第一次采集的数据，方便快速作出变化
     {

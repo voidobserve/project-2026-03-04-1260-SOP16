@@ -150,19 +150,21 @@ void main(void)
     // FOUT_S13 = GPIO_FOUT_AF_FUNC;     // 选择AF功能输出
 #endif // 打印串口配置
 
+    flag_is_in_power_on = 1; // 表示到了开机缓启动
+
 #if 1
     adc_pin_config(); // 配置使用到adc的引脚
     adc_config();
 
     tmr0_config(); // 配置定时器，默认关闭
     pwm_init();    // 配置pwm输出的引脚
-    // tmr1_config();
 
     timer2_config();
     timer3_config(); // 要等adc完成初始化，再调用timer3的初始化
 
     rf_recv_init(); // rf功能初始化
     fan_ctl_config();
+    delay_ms(10); // 等待系统稳定
 #endif
 
     limited_max_pwm_duty = MAX_PWM_DUTY;
@@ -174,23 +176,13 @@ void main(void)
 #if 1 // 开机缓慢启动（PWM信号变化平缓）
 
     P14 = 0; // 16脚先输出低电平
-    // c_duty = 0;
     cur_pwm_channel_0_duty = 0;
     cur_pwm_channel_1_duty = 0;
-    flag_is_in_power_on = 1; // 表示到了开机缓启动
-    // while (c_duty < 6000)
-    // while (c_duty < limited_max_pwm_duty) // 当c_duty 大于 限制的最大占空比后，退出
+
     while (cur_pwm_channel_0_duty < limited_max_pwm_duty || /* 当 cur_pwm_channel_0_duty 大于 限制的最大占空比后，退出 */
            cur_pwm_channel_1_duty < limited_max_pwm_duty)   /* 当 cur_pwm_channel_1_duty 大于 限制的最大占空比后，退出 */
     {
-        // adc_update_pin_9_adc_val();        // 采集并更新9脚的ad值
         update_max_pwm_duty_coefficient(); // 更新当前的最大占空比
-
-#if USE_MY_DEBUG // 直接打印0，防止在串口+图像上看到错位
-
-        // printf(",b=0,"); // 防止在串口图像错位
-
-#endif
 
         if (flag_is_pwm_sub_time_comes) // pwm递减时间到来（该标志位主要用在发动机功率不稳定检测中）
         {
@@ -224,12 +216,6 @@ void main(void)
 
         set_pwm_channel_0_duty(cur_pwm_channel_0_duty);
         set_pwm_channel_1_duty(cur_pwm_channel_1_duty);
-        // set_pwm_duty(); // 将 c_duty 写入pwm对应的寄存器
-        // set_p15_pwm_duty(c_duty);
-
-#if USE_MY_DEBUG
-        // printf("power_on_duty %u\n", c_duty);
-#endif //  USE_MY_DEBUG
     }
 #endif // 开机缓慢启动（PWM信号变化平缓）
 
@@ -267,33 +253,6 @@ void main(void)
 #endif
 
         // P02 = ~P02; // 测试主循环一轮所需时间
-
-        // 测试用：
-        // {
-        //     static u16 cnt = 0;
-        //     cnt++;
-
-        //     // if (cnt >= 10)
-        //     if (cnt >= 100)
-        //     {
-        //         cnt = 0;
-        //         // printf("expect_adjust_pwm_channel_0_duty: %u\n", expect_adjust_pwm_channel_0_duty);
-        //         // printf("expect_adjust_pwm_channel_1_duty: %u\n", expect_adjust_pwm_channel_1_duty);
-        //         // printf("adjust_pwm_channel_0_duty: %u\n", adjust_pwm_channel_0_duty);
-        //         // printf("adjust_pwm_channel_1_duty: %u\n", adjust_pwm_channel_1_duty);
-        //         // printf("cur_pwm_channel_0_duty: %u\n", cur_pwm_channel_0_duty);
-        //         // printf("cur_pwm_channel_1_duty: %u\n", cur_pwm_channel_1_duty);
-
-        //         // printf("__LINE__ %u\n", __LINE__);
-        //         // printf("val %u\n", ADC_OVER_DRIVE_VAL);
-        //         // printf("val %u\n", (u16)adc_val_from_fan);
-        //         // printf("val %u\n", (u16)adc_val_from_temp);
-        //         // printf("val %u\n", (u16)adc_val_from_knob);
-        //         // printf("val %u\n", (u16)adc_val_from_engine);
-
-        //         // P02 = ~P02;
-        //     }
-        // }
     }
 }
 
